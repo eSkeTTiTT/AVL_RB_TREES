@@ -1,3 +1,4 @@
+#pragma once
 #include "includes.h"
 template<typename> class Compare;
 
@@ -34,7 +35,7 @@ public:
 template<typename T> class AVL_tree : public binary_tree<T>
 {
 private:
-	Node_AVL* root_AVL;
+	Node_AVL* root_AVL; // корень
 
 	int Height(Node_AVL* root)
 	{
@@ -210,7 +211,7 @@ public:
 template<typename T> class RB_tree :  public binary_tree<T>
 {
 private:
-	Node_RB* root_RB;
+	Node_RB* root_RB; // корень 
 
 	void RBInsert(Node_RB** root, Node_RB* ptr)
 	{
@@ -441,8 +442,8 @@ private:
 
 	bool RBSearch(Node_RB*& root, const T& value)
 	{
-		if ((this->get_strategy())->compare(value, root->data)) {
-			if (value == tree->data) { return true; }
+		if ((this->get_strategy())->compare(value, root->data_)) {
+			if (value == root->data_) { return true; }
 			else return RBSearch(root->left, value);
 		}
 		else { return RBSearch(root->right, value); }
