@@ -6,25 +6,27 @@
 
 using namespace std;
 
-struct Node_AVL
+template<typename T> class  Node_AVL
 {
-	int data_;
-	Node_AVL* left;
-	Node_AVL* right;
+public:
+	T data_;
+	Node_AVL<T>* left;
+	Node_AVL<T>* right;
 	int height_;
 
-	Node_AVL(int&& value) { data_ = value; left = right = nullptr; height_ = 1; }
-	Node_AVL(const int& value) { data_ = value; left = right = nullptr; height_ = 1; }
+	Node_AVL(T&& value) { data_ = value; left = right = nullptr; height_ = 1; }
+	Node_AVL(const T& value) { data_ = value; left = right = nullptr; height_ = 1; }
 };
 
-struct Node_RB
+template<typename T> class  Node_RB
 {
-	int data_;
-	Node_RB* parent;
-	Node_RB* left;
-	Node_RB* right;
+public:
+	T data_;
+	Node_RB<T>* parent;
+	Node_RB<T>* left;
+	Node_RB<T>* right;
 	bool color; // true - red, false - black
 };
 
 #define NIL &sential
-Node_RB sential = { 0, nullptr, nullptr, nullptr, false };
+template<typename T> Node_RB<T> sential = { 0, nullptr, nullptr, nullptr, false };

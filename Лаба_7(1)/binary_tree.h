@@ -35,20 +35,20 @@ public:
 template<typename T> class AVL_tree : public binary_tree<T>
 {
 private:
-	Node_AVL* root_AVL; // корень
+	Node_AVL<T>* root_AVL; // корень
 
-	int Height(Node_AVL* root)
+	int Height(Node_AVL<T>* root)
 	{
 		if (root) { return root->height_; }
 		else return 0;
 	}
 
-	int DifferenceHeight(Node_AVL* root)
+	int DifferenceHeight(Node_AVL<T>* root)
 	{
 		return Height(root->right) - Height(root->left);
 	}
 
-	void OverHeight(Node_AVL* root)
+	void OverHeight(Node_AVL<T>* root)
 	{
 		int hleft, hright;
 		hleft = Height(root->left);
@@ -56,9 +56,9 @@ private:
 		root->height_ = (hleft > hright ? hleft : hright) + 1;
 	}
 
-	void LeftRotation(Node_AVL** root)
+	void LeftRotation(Node_AVL<T>** root)
 	{
-		Node_AVL* ptr = (*root)->right;
+		Node_AVL<T>* ptr = (*root)->right;
 		(*root)->right = ptr->left;
 		ptr->left = (*root);
 		OverHeight(*root);
@@ -67,9 +67,9 @@ private:
 		(*root) = ptr;
 	}
 
-	void RightRotation(Node_AVL** root)
+	void RightRotation(Node_AVL<T>** root)
 	{
-		Node_AVL* ptr = (*root)->left;
+		Node_AVL<T>* ptr = (*root)->left;
 		(*root)->left = ptr->right;
 		ptr->right = (*root);
 		OverHeight(*root);
@@ -78,7 +78,7 @@ private:
 		(*root) = ptr;
 	}
 
-	void Balance(Node_AVL** root)
+	void Balance(Node_AVL<T>** root)
 	{
 		OverHeight(*root);
 
@@ -94,41 +94,41 @@ private:
 		}
 	}
 
-	Node_AVL* SearchMin(Node_AVL* root)
+	Node_AVL<T>* SearchMin(Node_AVL<T>* root)
 	{
 		if (root->left) { return SearchMin(root->left); }
 		else { return root; }
 	}
 
-	void DeleteMin(Node_AVL** root)
+	void DeleteMin(Node_AVL<T>** root)
 	{
 		if (!(*root)->left) { (*root) = (*root)->right; return; }
 		DeleteMin(&(*root)->left);
 		Balance(root);
 	}
 
-	void insert(Node_AVL** root, const T& value)
+	void insert(Node_AVL<T>** root, const T& value)
 	{
 		if (this->get_strategy()->compare(value, (*root)->data_)) {
 			if ((*root)->data_ == value) { return; }
 
-			if (!(*root)->left) { (*root)->left = new Node_AVL(value); OverHeight((*root)); return; } // чтобы лишний раз не заходить в Balance() 
+			if (!(*root)->left) { (*root)->left = new Node_AVL<T>(value); OverHeight((*root)); return; } // чтобы лишний раз не заходить в Balance() 
 			else { insert(&(*root)->left, value); }
 		}
 		else {
-			if (!(*root)->right) { (*root)->right = new Node_AVL(value); OverHeight((*root)); return; }
+			if (!(*root)->right) { (*root)->right = new Node_AVL<T>(value); OverHeight((*root)); return; }
 			else { insert(&(*root)->right, value); }
 		}
 
 		Balance(root);
 	}
 
-	void Delete(Node_AVL** root, const T& value)
+	void Delete(Node_AVL<T>** root, const T& value)
 	{
 		if (this->get_strategy()->compare(value, (*root)->data_)) {
 			if ((*root)->data_ == value) {
-				Node_AVL* left = (*root)->left;
-				Node_AVL* right = (*root)->right;
+				Node_AVL<T>* left = (*root)->left;
+				Node_AVL<T>* right = (*root)->right;
 				delete (*root);
 
 				if (!right) { (*root) = left; return; }
@@ -149,7 +149,7 @@ private:
 		Balance(root);
 	}
 
-	bool Search(Node_AVL* root, const T& value)
+	bool Search(Node_AVL<T>* root, const T& value)
 	{
 		if (this->get_strategy()->compare(value, root->data_)) {
 			if (root->data_ == value) { return true; }
@@ -164,18 +164,18 @@ private:
 	}
 
 public:
-	AVL_tree(Strategy<T>* strategy, const T& value) : binary_tree<T>(strategy) { this->root_AVL = new Node_AVL(value); }
-	AVL_tree(Strategy<T>* strategy, T&& value) : binary_tree<T>(strategy) { this->root_AVL = new Node_AVL(value); }
+	AVL_tree(Strategy<T>* strategy, const T& value) : binary_tree<T>(strategy) { this->root_AVL = new Node_AVL<T>(value); }
+	AVL_tree(Strategy<T>* strategy, T&& value) : binary_tree<T>(strategy) { this->root_AVL = new Node_AVL<T>(value); }
 
 	void addItem(T&& value) override
 	{
-		if (!root_AVL) { root_AVL = new Node_AVL(value); return; }
+		if (!root_AVL) { root_AVL = new Node_AVL<T>(value); return; }
 		insert(&root_AVL, value);
 	}
 
 	void addItem(const T& value) override
 	{
-		if (!root_AVL) { root_AVL = new Node_AVL(value); return; }
+		if (!root_AVL) { root_AVL = new Node_AVL<T>(value); return; }
 		insert(&root_AVL, value);
 	}
 
@@ -208,31 +208,31 @@ public:
 
 
 
-template<typename T> class RB_tree :  public binary_tree<T>
+template<typename T> class RB_tree : public binary_tree<T>
 {
 private:
-	Node_RB* root_RB; // корень 
+	Node_RB<T>* root_RB; // корень 
 
-	void RBInsert(Node_RB** root, Node_RB* ptr)
+	void RBInsert(Node_RB<T>** root, Node_RB<T>* ptr)
 	{
 		if (this->get_strategy()->compare(ptr->data_, (*root)->data_)) {
 			if (ptr->data_ == (*root)->data_) { return; }
 
-			if ((*root)->left == NIL) { (*root)->left = ptr; (*root)->left->parent = (*root); return; }
+			if ((*root)->left == NIL<T>) { (*root)->left = ptr; (*root)->left->parent = (*root); return; }
 			else { RBInsert(&(*root)->left, ptr); }
 		}
 		else {
-			if ((*root)->right == NIL) { (*root)->right = ptr; (*root)->right->parent = (*root); return; }
+			if ((*root)->right == NIL<T>) { (*root)->right = ptr; (*root)->right->parent = (*root); return; }
 			else { RBInsert(&(*root)->right, ptr); }
 		}
 	}
 
-	void rotateLeft(Node_RB*& root, Node_RB*& ptr)
+	void rotateLeft(Node_RB<T>*& root, Node_RB<T>*& ptr)
 	{
-		Node_RB* ptr_right = ptr->right;
+		Node_RB<T>* ptr_right = ptr->right;
 
 		ptr->right = ptr_right->left;
-		if (ptr->right != NIL) { ptr->right->parent = ptr; }
+		if (ptr->right != NIL<T>) { ptr->right->parent = ptr; }
 
 		ptr_right->parent = ptr->parent;
 
@@ -244,12 +244,12 @@ private:
 		ptr->parent = ptr_right;
 	}
 
-	void rotateRight(Node_RB*& root, Node_RB*& ptr)
+	void rotateRight(Node_RB<T>*& root, Node_RB<T>*& ptr)
 	{
-		Node_RB* ptr_left = ptr->left;
+		Node_RB<T>* ptr_left = ptr->left;
 
 		ptr->left = ptr_left->right;
-		if (ptr->left != NIL) { ptr->left->parent = ptr; }
+		if (ptr->left != NIL<T>) { ptr->left->parent = ptr; }
 
 		ptr_left->parent = ptr->parent;
 
@@ -261,13 +261,13 @@ private:
 		ptr->parent = ptr_left;
 	}
 
-	void FixDelete(Node_RB** root, Node_RB* ptr)
+	void FixDelete(Node_RB<T>** root, Node_RB<T>* ptr)
 	{
 
 		while (ptr != *root && !ptr->color)
 		{
 			if (ptr == ptr->parent->left) {
-				Node_RB* brother = ptr->parent->right;
+				Node_RB<T>* brother = ptr->parent->right;
 				if (brother->color) {
 					brother->color = false;
 					ptr->parent->color = true;
@@ -294,7 +294,7 @@ private:
 				}
 			}
 			else {
-				Node_RB* brother = ptr->parent->left;
+				Node_RB<T>* brother = ptr->parent->left;
 				if (brother->color) {
 					brother->color = false;
 					ptr->parent->color = true;
@@ -325,23 +325,23 @@ private:
 		ptr->color = false;
 	}
 
-	void RBDelete(Node_RB* root, const T& value)
+	void RBDelete(Node_RB<T>* root, const T& value)
 	{
-		if (!root || root == NIL) { return; } // end
+		if (!root || root == NIL<T>) { return; } // end
 
 		if (this->get_strategy()->compare(value, root->data_)) {
 			if (value == root->data_) {
 
-				Node_RB* ptr; 
-				Node_RB* temp;
+				Node_RB<T>* ptr;
+				Node_RB<T>* temp;
 
-				if (root->left == NIL || root->right == NIL) { ptr = root; } // 1 ребенок или 0
+				if (root->left == NIL<T> || root->right == NIL<T>) { ptr = root; } // 1 ребенок или 0
 				else { // 2 ребенка
 					ptr = root->right;
-					while (ptr->left != NIL) { ptr = ptr->left; }
+					while (ptr->left != NIL<T>) { ptr = ptr->left; }
 				}
 
-				if (ptr->left != NIL) { temp = ptr->left; } // если это левый ребнок
+				if (ptr->left != NIL<T>) { temp = ptr->left; } // если это левый ребнок
 				else { temp = ptr->right; } // если это правый ребенок или же правый от минимального справа
 
 				temp->parent = ptr->parent;
@@ -352,8 +352,9 @@ private:
 				}
 				else { root_RB = temp; }
 
-				if (ptr != root) { 
-					root->data_ = ptr->data_; } // когда прошлись до минимального справа и нужно поменять значения
+				if (ptr != root) {
+					root->data_ = ptr->data_;
+				} // когда прошлись до минимального справа и нужно поменять значения
 
 				if (!ptr->color) { FixDelete(&root_RB, temp); }
 
@@ -368,10 +369,10 @@ private:
 		}
 	}
 
-	void FixInsert(Node_RB** root, Node_RB* ptr)
+	void FixInsert(Node_RB<T>** root, Node_RB<T>* ptr)
 	{
-		Node_RB* parent_ptr = nullptr;
-		Node_RB* grand_parent_ptr = nullptr;
+		Node_RB<T>* parent_ptr = nullptr;
+		Node_RB<T>* grand_parent_ptr = nullptr;
 
 		while (ptr != (*root) && ptr->color && ptr->parent->color)
 		{
@@ -379,12 +380,12 @@ private:
 			grand_parent_ptr = ptr->parent->parent;
 
 			//A
-			if (parent_ptr == grand_parent_ptr->left) 
+			if (parent_ptr == grand_parent_ptr->left)
 			{
-				Node_RB* uncle_ptr = grand_parent_ptr->right;
+				Node_RB<T>* uncle_ptr = grand_parent_ptr->right;
 
 				//1 uncle красный
-				if (uncle_ptr != NIL && uncle_ptr->color)
+				if (uncle_ptr != NIL<T> && uncle_ptr->color)
 				{
 					grand_parent_ptr->color = true;
 					parent_ptr->color = false;
@@ -409,10 +410,10 @@ private:
 			}
 			else //B родитель - правый потомок
 			{
-				Node_RB* uncle_ptr = grand_parent_ptr->left;
+				Node_RB<T>* uncle_ptr = grand_parent_ptr->left;
 
 				//1 uncle красный
-				if (uncle_ptr != NIL && uncle_ptr->color)
+				if (uncle_ptr != NIL<T> && uncle_ptr->color)
 				{
 					grand_parent_ptr->color = true;
 					parent_ptr->color = false;
@@ -440,7 +441,7 @@ private:
 		(*root)->color = false; // корень всегда черный
 	}
 
-	bool RBSearch(Node_RB*& root, const T& value)
+	bool RBSearch(Node_RB<T>*& root, const T& value)
 	{
 		if ((this->get_strategy())->compare(value, root->data_)) {
 			if (value == root->data_) { return true; }
@@ -450,66 +451,66 @@ private:
 	}
 
 public:
-	RB_tree(Strategy<T>* strategy, const T& value) : binary_tree<T>(strategy) { 
-		this->root_RB = new Node_RB; 
+	RB_tree(Strategy<T>* strategy, const T& value) : binary_tree<T>(strategy) {
+		this->root_RB = new Node_RB<T>;
 		this->root_RB->data_ = value;
-		this->root_RB->left = this->root_RB->right = NIL;
+		this->root_RB->left = this->root_RB->right = NIL<T>;
 		this->root_RB->parent = nullptr;
 		this->root_RB->color = false; // потому что корень
 	}
-	RB_tree(Strategy<T>* strategy, T&& value) : binary_tree<T>(strategy) { 
-		this->root_RB = new Node_RB;
+	RB_tree(Strategy<T>* strategy, T&& value) : binary_tree<T>(strategy) {
+		this->root_RB = new Node_RB<T>;
 		this->root_RB->data_ = value;
-		this->root_RB->left = this->root_RB->right = NIL;
+		this->root_RB->left = this->root_RB->right = NIL<T>;
 		this->root_RB->parent = nullptr;
 		this->root_RB->color = false;
 	}
 
 	void addItem(T&& value) override
 	{
-		Node_RB* ptr = new Node_RB;
+		Node_RB<T>* ptr = new Node_RB<T>;
 		ptr->data_ = value;
-		ptr->left = ptr->right = NIL;
+		ptr->left = ptr->right = NIL<T>;
 		ptr->parent = nullptr;
 		ptr->color = true;
 
-		if (root_RB == NIL) { root_RB = ptr; return; }
+		if (root_RB == NIL<T>) { root_RB = ptr; return; }
 		RBInsert(&root_RB, ptr);
 		FixInsert(&root_RB, ptr);
 	}
 
 	void addItem(const T& value) override
 	{
-		Node_RB* ptr = new Node_RB;
+		Node_RB<T>* ptr = new Node_RB<T>;
 		ptr->data_ = value;
-		ptr->left = ptr->right = NIL;
+		ptr->left = ptr->right = NIL<T>;
 		ptr->parent = nullptr;
 		ptr->color = true;
 
-		if (root_RB = NIL) { root_RB = ptr; return; }
+		if (root_RB = NIL<T>) { root_RB = ptr; return; }
 		RBInsert(&root_RB, ptr);
 		FixInsert(&root_RB, ptr);
 	}
 
 	void deleteItem(T&& value) override
 	{
-		if (root_RB != NIL) { RBDelete(root_RB, value); }
+		if (root_RB != NIL<T>) { RBDelete(root_RB, value); }
 	}
 
 	void deleteItem(const T& value) override
 	{
-		if (root_RB != NIL) { RBDelete(root_RB, value); }
+		if (root_RB != NIL<T>) { RBDelete(root_RB, value); }
 	}
 
 	bool searchItem(T&& value) override
 	{
-		if (root_RB != NIL) { return RBSearch(root_RB, value); }
+		if (root_RB != NIL<T>) { return RBSearch(root_RB, value); }
 		return false;
 	}
 
 	bool searchItem(const T& value) override
 	{
-		if (root_RB != NIL) { return RBSearch(root_RB, value); }
+		if (root_RB != NIL<T>) { return RBSearch(root_RB, value); }
 		return false;
 	}
 };
