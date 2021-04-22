@@ -163,9 +163,24 @@ private:
 		}
 	}
 
+	void delete_memory_tree(Node_AVL<T>* ptr)
+	{
+		if (ptr) {
+			delete_memory_tree(ptr->left);
+			delete_memory_tree(ptr->right);
+			delete ptr; 
+		}
+	}
+
 public:
+	AVL_tree(Strategy<T>* strategy) : binary_tree<T>(strategy) { this->root_AVL = nullptr; }
 	AVL_tree(Strategy<T>* strategy, const T& value) : binary_tree<T>(strategy) { this->root_AVL = new Node_AVL<T>(value); }
 	AVL_tree(Strategy<T>* strategy, T&& value) : binary_tree<T>(strategy) { this->root_AVL = new Node_AVL<T>(value); }
+	~AVL_tree()
+	{
+		cout << "AVL_desructor\n";
+		if (this->root_AVL) delete_memory_tree(this->root_AVL);
+	}
 
 	void addItem(T&& value) override
 	{
@@ -450,7 +465,18 @@ private:
 		else { return RBSearch(root->right, value); }
 	}
 
+	void delete_memory_tree(Node_RB<T>* ptr)
+	{
+		if (ptr != NIL<T>) {
+			delete_memory_tree(ptr->left);
+			delete_memory_tree(ptr->right);
+			delete ptr;
+		}
+		
+	}
+
 public:
+	RB_tree(Strategy<T>* strategy) : binary_tree<T>(strategy) { this->root_RB = NIL<T>; }
 	RB_tree(Strategy<T>* strategy, const T& value) : binary_tree<T>(strategy) {
 		this->root_RB = new Node_RB<T>;
 		this->root_RB->data_ = value;
@@ -464,6 +490,11 @@ public:
 		this->root_RB->left = this->root_RB->right = NIL<T>;
 		this->root_RB->parent = nullptr;
 		this->root_RB->color = false;
+	}
+	~RB_tree()
+	{
+		cout << "RB destructor\n";
+		if (this->root_RB != NIL<T>) delete_memory_tree(this->root_RB);
 	}
 
 	void addItem(T&& value) override
@@ -517,7 +548,7 @@ public:
 
 
 
-//Compare
+//Compares
 template<typename T> class Compare : public Strategy<T>
 {
 public:

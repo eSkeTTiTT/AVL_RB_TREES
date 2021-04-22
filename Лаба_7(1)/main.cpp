@@ -19,5 +19,7 @@ int main()
 	Tree->addItem(4);
 	Tree->deleteItem(4);
 
+	delete tree;
+	delete Tree;
 	return 0;
 }
