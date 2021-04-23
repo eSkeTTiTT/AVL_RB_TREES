@@ -505,7 +505,7 @@ public:
 		ptr->parent = nullptr;
 		ptr->color = true;
 
-		if (root_RB == NIL<T>) { root_RB = ptr; return; }
+		if (root_RB == NIL<T>) { root_RB = ptr; root_RB->color = false; return; }
 		RBInsert(&root_RB, ptr);
 		FixInsert(&root_RB, ptr);
 	}
@@ -518,7 +518,7 @@ public:
 		ptr->parent = nullptr;
 		ptr->color = true;
 
-		if (root_RB = NIL<T>) { root_RB = ptr; return; }
+		if (root_RB = NIL<T>) { root_RB = ptr; root_RB->color = false; return; }
 		RBInsert(&root_RB, ptr);
 		FixInsert(&root_RB, ptr);
 	}
