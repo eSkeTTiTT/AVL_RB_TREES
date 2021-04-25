@@ -458,6 +458,8 @@ private:
 
 	bool RBSearch(Node_RB<T>*& root, const T& value)
 	{
+		if (root == NIL<T>) return false;
+
 		if ((this->get_strategy())->compare(value, root->data_)) {
 			if (value == root->data_) { return true; }
 			else return RBSearch(root->left, value);
@@ -472,7 +474,6 @@ private:
 			delete_memory_tree(ptr->right);
 			delete ptr;
 		}
-		
 	}
 
 public:
